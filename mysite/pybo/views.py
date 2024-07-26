@@ -3,11 +3,15 @@ from django.utils import timezone
 from .models import Question, Answer
 from django.http import HttpResponseNotAllowed
 from .forms import QuestionForm, AnswerForm
+from django.core.paginator import Paginator
 
 
 def index(request):
+    page = request.GET.get('page', '1') # 페이지 처리
     questionList = Question.objects.order_by('-create_date')
-    context = {'questionList': questionList}
+    paginator = Paginator(questionList, 15) # 페이지당 15개씩 보여주기
+    page_obj = paginator.get_page(page)
+    context = {'questionList': page_obj}
     return render(request, 'pybo/questionList.html', context)
 
 def detail(request, question_id):
